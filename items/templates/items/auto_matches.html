@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen bg-[#0f172a] py-12 px-8 text-white">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-amber-500 mb-2 flex items-center">
+            <i class="fa-solid fa-wand-magic-sparkles mr-3"></i> Auto-Matches
+        </h1>
+        <p class="text-slate-400 mb-10">Smart suggestions based on your lost reports.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for item in matches %}
+            <div class="bg-[#1e293b] p-6 rounded-2xl border border-amber-500/30 shadow-xl">
+                <span class="bg-green-500 text-white text-[10px] px-2 py-1 rounded-full font-bold">FOUND MATCH</span>
+                <h3 class="text-xl font-bold mt-4">{{ item.title }}</h3>
+                <p class="text-slate-400 text-sm mt-2">{{ item.location }}</p>
+                <a href="{% url 'item_detail' item.pk %}" class="block mt-6 text-center bg-amber-600 hover:bg-amber-700 py-2 rounded-lg font-bold transition">
+                    Verify Ownership
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center bg-[#1e293b] rounded-2xl border border-dashed border-slate-700">
+                <p class="text-slate-500 italic">No smart matches found yet. We'll alert you when something pops up!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

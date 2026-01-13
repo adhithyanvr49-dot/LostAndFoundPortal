@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen bg-[#0f172a] py-12 px-8 text-white">
+    <h1 class="text-4xl font-bold text-blue-500 text-center mb-12">My Reports</h1>
+
+    <form method="GET" action="{% url 'my_reports' %}" class="flex flex-wrap justify-center gap-4 mb-8">
+        <input type="text" name="q" placeholder="Search by item name" value="{{ request.GET.q }}"
+               class="bg-[#1e293b] border border-slate-600 rounded px-4 py-2 outline-none focus:border-blue-500 text-white">
+        
+        <select name="category" class="bg-[#1e293b] border border-slate-600 rounded px-4 py-2 text-white">
+            <option>All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="documents">Documents</option>
+            <option value="accessories">Accessories</option>
+        </select>
+
+        <select name="status" class="bg-[#1e293b] border border-slate-600 rounded px-4 py-2 text-white">
+            <option>All Status</option>
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+        </select>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded font-bold transition">
+            Search
+        </button>
+    </form>
+
+    <div class="max-w-7xl mx-auto overflow-hidden rounded-xl border border-blue-500 shadow-2xl">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-blue-600 text-white text-sm uppercase">
+                <tr>
+                    <th class="px-6 py-4">Item Name</th>
+                    <th class="px-6 py-4">Category</th>
+                    <th class="px-6 py-4">Description</th>
+                    <th class="px-6 py-4">Date & Time</th>
+                    <th class="px-6 py-4">Location</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Contact Info</th>
+                    <th class="px-6 py-4">Image</th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#1e293b] divide-y divide-slate-700">
+                {% for item in my_items %}
+                <tr class="hover:bg-[#2d3a4f] transition">
+                    <td class="px-6 py-4 font-medium">{{ item.title }}</td>
+                    <td class="px-6 py-4 text-slate-400">{{ item.get_category_display }}</td>
+                    <td class="px-6 py-4 text-slate-300 text-sm">{{ item.description|truncatechars:40 }}</td>
+                    <td class="px-6 py-4 text-slate-400">{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                    <td class="px-6 py-4">{{ item.location }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded text-[10px] font-bold uppercase 
+                            {% if item.status == 'LOST' %} bg-red-500 {% else %} bg-green-500 {% endif %} text-white">
+                            {{ item.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-blue-400 font-mono text-xs">{{ item.contact_info|default:"N/A" }}</td>
+                    <td class="px-6 py-4">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" class="w-16 h-12 object-cover rounded border border-slate-600">
+                        {% else %}
+                            <span class="text-slate-600 italic text-xs">No Image</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="px-6 py-12 text-center text-slate-500">
+                        <i class="fa-solid fa-folder-open text-4xl mb-4 block"></i>
+                        No reports found matching your criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen bg-[#0f172a] flex flex-col">
+    <div class="p-8">
+        <h1 class="text-3xl font-bold text-blue-500">Map View</h1>
+        <p class="text-slate-400">Visualize where items were lost and found.</p>
+    </div>
+    
+    <div id="map" class="flex-1 bg-slate-800"></div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([51.505, -0.09], 13); // Default view
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    {% for item in items %}
+        // If you add Latitude/Longitude fields to your model:
+        // L.marker([{{ item.lat }}, {{ item.lng }}]).addTo(map)
+        //   .bindPopup("<b>{{ item.title }}</b><br>{{ item.status }}");
+    {% endfor %}
+</script>
+<style>#map { min-height: 500px; width: 100%; }</style>
+{% endblock %}
