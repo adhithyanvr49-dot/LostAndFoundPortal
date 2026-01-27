@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="min-h-screen bg-white py-12 px-6 lg:px-8">
+<div class="max-w-4xl mx-auto">
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 animate__animated animate__fadeIn">
+        <div class="flex items-center gap-6">
+            <!-- Sassy Avatar with Gradient Glow -->
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                <div class="relative w-24 h-24 bg-white border-2 border-slate-100 rounded-[2rem] flex items-center justify-center text-3xl font-black text-indigo-600 shadow-sm">
+                    {{ user.username|first|upper }}
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 leading-tight">{{ user.username }}</h1>
+                <p class="text-slate-500 font-medium">Member since {{ user.date_joined|date:"F Y" }}</p>
+            </div>
+        </div>
+        
+        <!-- Edit Button Link -->
+        <a href="{% url 'profile_settings' %}" class="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-100 transition-all transform hover:-translate-y-1">
+            <i class="fa-solid fa-user-pen"></i> Edit Profile
+        </a>
+    </div>
+
+    <!-- Dashboard Stats Variety -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+        <div class="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 text-center group hover:bg-white hover:shadow-xl hover:shadow-indigo-50 transition-all duration-500">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Total Reports</p>
+            <p class="text-4xl font-black text-slate-900">{{ my_items.count|default:"0" }}</p>
+        </div>
+        <div class="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 text-center group hover:bg-white hover:shadow-xl hover:shadow-emerald-50 transition-all duration-500">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Matches Found</p>
+            <p class="text-4xl font-black text-slate-900">0</p>
+        </div>
+        <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-center shadow-2xl shadow-indigo-100 transform hover:scale-105 transition-all">
+            <p class="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] mb-4">Account Status</p>
+            <p class="text-xl font-black text-white uppercase tracking-widest">Verified</p>
+        </div>
+    </div>
+
+    <!-- Detailed Info Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Account Details -->
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <h3 class="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                <i class="fa-solid fa-address-card text-indigo-600"></i> Account Details
+            </h3>
+            <div class="space-y-6">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Email Address</p>
+                    <p class="text-slate-700 font-bold">{{ user.email|default:"No email provided" }}</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">User ID</p>
+                    <p class="text-slate-700 font-bold">#{{ user.id|stringformat:"05d" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Achievements / Bio -->
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <h3 class="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                <i class="fa-solid fa-award text-amber-500"></i> Activity Rank
+            </h3>
+            <div class="flex items-center gap-6">
+                <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 text-2xl">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div>
+                    <p class="text-slate-900 font-bold">Community Hero</p>
+                    <p class="text-xs text-slate-500 font-medium">Top 10% of active finders</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-slate-50">
+                <p class="text-sm text-slate-500 italic">"Helping reunite property with people since {{ user.date_joined|date:"Y" }}."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Link -->
+    <div class="mt-12 text-center">
+        <a href="{% url 'dashboard' %}" class="text-slate-400 font-bold text-sm hover:text-indigo-600 transition-colors">
+            ← Return to Dashboard
+        </a>
+    </div>
+</div>
+
+
+</div>
+
+<style>
+body { background-color: white; }
+</style>
+
+{% endblock %}

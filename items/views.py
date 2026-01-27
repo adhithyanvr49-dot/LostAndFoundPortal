@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Item
 from .forms import ItemReportForm 
 # items/views.py
 from django.shortcuts import render, get_object_or_404
 from .models import Item
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db import models  # This fixes the NameError
+from django.contrib.auth import get_user_model
+from .models import Message, Item # Ensure your custom models are imported
 
 def item_detail(request, pk):
     # Retrieve the item by its Primary Key (pk)
@@ -121,3 +124,141 @@ def my_reports(request):
         reports = reports.filter(status=status.upper())
 
     return render(request, 'items/my_reports.html', {'my_items': reports})
+# items/views.py
+# items/views.py
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Item, Claim # Ensure Claim is imported now
+
+@login_required
+def profile_settings(request):
+    # This view satisfies the 'profile_settings' link in sidebar
+    return render(request, 'items/profile_settings.html')
+
+@login_required
+def auto_matches(request):
+    # This handles the 'Smart Features' variety
+    return render(request, 'items/auto_matches.html')
+
+@login_required
+def claim_history(request):
+    # This powers the 'Claim History' table
+    claims = Claim.objects.filter(claimant=request.user)
+    return render(request, 'items/claim_history.html', {'claims': claims})
+# items/views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from .models import Message
+
+@login_required
+def my_messages(request, receiver_id=None):
+    # If no receiver is selected, default to the last person messaged
+    receiver = None
+    if receiver_id:
+        receiver = get_object_or_404(User, id=receiver_id)
+    
+    # Handle sending a new message
+    if request.method == 'POST' and receiver:
+        content = request.POST.get('content')
+        if content:
+            Message.objects.create(sender=request.user, receiver=receiver, content=content)
+            return redirect('my_messages', receiver_id=receiver_id)
+
+    # Fetch chat history between current user and the receiver
+    chat_messages = []
+    if receiver:
+        chat_messages = Message.objects.filter(
+            models.Q(sender=request.user, receiver=receiver) | 
+            models.Q(sender=receiver, receiver=request.user)
+        )
+
+    # Get a list of unique people the user has chatted with for the sidebar
+    conversations = Message.objects.filter(
+        models.Q(sender=request.user) | models.Q(receiver=request.user)
+    ).values_list('sender', 'receiver')
+    
+    # Flatten and find unique users (excluding yourself)
+    user_ids = set([uid for conv in conversations for uid in conv if uid != request.user.id])
+    contacts = User.objects.filter(id__in=user_ids)
+
+    return render(request, 'items/my_messages.html', {
+        'contacts': contacts,
+        'receiver': receiver,
+        'chat_messages': chat_messages
+    })
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db import models
+from django.contrib.auth import get_user_model # Use this to fetch the active user model
+from .models import Message
+
+User = get_user_model() # This ensures you use 'accounts.CustomUser'
+
+# items/views.py
+from django.db.models import Q
+
+@login_required
+def messages_view(request, receiver_id=None):
+    User = get_user_model()
+    receiver = None
+    
+    if receiver_id:
+        receiver = get_object_or_404(User, id=receiver_id)
+
+    if request.method == "POST" and receiver:
+        content = request.POST.get('content')
+        if content:
+            # Save the message to the database
+            Message.objects.create(sender=request.user, receiver=receiver, content=content)
+            # Redirect back to the same chat to see the new message
+            return redirect('messages_view', receiver_id=receiver.id)
+
+    # Fetch messages between the logged-in user and the selected receiver
+    chat_messages = []
+    if receiver:
+        chat_messages = Message.objects.filter(
+            Q(sender=request.user, receiver=receiver) | 
+            Q(sender=receiver, receiver=request.user)
+        ).order_by('timestamp')
+
+    return render(request, 'items/messages.html', {
+        'receiver': receiver,
+        'chat_messages': chat_messages
+    })
+# items/views.py# items/views.py
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Item, Claim # Ensure Claim model is imported
+
+@login_required
+def claim_item(request, item_id):
+    if request.method == 'POST':
+        item = get_object_or_404(Item, id=item_id)
+        proof = request.POST.get('proof_description')
+        
+        # Save the claim to the database
+        Claim.objects.create(
+            item=item,
+            claimant=request.user,
+            proof_description=proof,
+            status='PENDING' # Status shown in Claim History
+        )
+        return redirect('claim_history') # Redirect to see the new entry
+    
+    return redirect('dashboard')
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Claim 
+
+@login_required
+def delete_claim(request, claim_id):
+    # Retrieve the claim or return 404
+    claim = get_object_or_404(Claim, id=claim_id)
+    
+    # Security: Ensure only the person who created the claim can delete it
+    if claim.claimant == request.user:
+        claim.delete()
+        
+    # Redirect back to the claim history page
+    return redirect('claim_history')
