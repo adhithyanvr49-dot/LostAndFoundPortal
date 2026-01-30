@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Verify Claim</h1>
+                    <p class="text-gray-600">Review the claim details and make a decision</p>
+                </div>
+                <a href="{% url 'admin_dashboard' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Item Details -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Item Details</h2>
+                
+                {% if claim.item.image %}
+                    <div class="mb-4">
+                        <img src="{{ claim.item.image.url }}" alt="{{ claim.item.title }}" class="w-full h-64 object-cover rounded-lg">
+                    </div>
+                {% endif %}
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Title</label>
+                        <p class="text-lg font-semibold text-gray-900">{{ claim.item.title }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Description</label>
+                        <p class="text-gray-700">{{ claim.item.description }}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-500">Category</label>
+                            <p class="text-gray-900 capitalize">{{ claim.item.category }}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-500">Status</label>
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {% if claim.item.status == 'LOST' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                {{ claim.item.status }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Location</label>
+                        <p class="text-gray-900">{{ claim.item.location }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Reported by</label>
+                        <p class="text-gray-900">{{ claim.item.user.username }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Date Reported</label>
+                        <p class="text-gray-900">{{ claim.item.created_at|date:"F d, Y g:i A" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claim Details -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Claim Information</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Claimant</label>
+                        <div class="flex items-center mt-1">
+                            <div class="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                <span class="text-indigo-600 font-semibold text-sm">{{ claim.claimant.username|first|upper }}</span>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-900">{{ claim.claimant.username }}</p>
+                                <p class="text-sm text-gray-500">{{ claim.claimant.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Claim Type</label>
+                        <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full mt-1
+                            {% if claim.claim_type == 'found_my_item' %}bg-blue-100 text-blue-800{% else %}bg-purple-100 text-purple-800{% endif %}">
+                            {{ claim.get_claim_type_display }}
+                        </span>
+                        {% if claim.claim_type == 'found_my_item' %}
+                            <p class="text-xs text-blue-600 mt-1">⚠️ User is claiming their own reported item</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Claim Date</label>
+                        <p class="text-gray-900">{{ claim.created_at|date:"F d, Y g:i A" }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Current Status</label>
+                        <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full {% if claim.status == 'PENDING' %}bg-yellow-100 text-yellow-800{% elif claim.status == 'APPROVED' %}bg-green-100 text-green-800{% elif claim.status == 'UNDER_REVIEW' %}bg-blue-100 text-blue-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ claim.status }}
+                        </span>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Proof Description</label>
+                        <div class="mt-2 p-4 bg-gray-50 rounded-lg border">
+                            <p class="text-gray-700 leading-relaxed">{{ claim.proof_description }}</p>
+                        </div>
+                    </div>
+
+                    {% if claim.verification_notes %}
+                        <div>
+                            <label class="text-sm font-medium text-gray-500">Previous Admin Notes</label>
+                            <div class="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                <p class="text-blue-700 leading-relaxed">{{ claim.verification_notes }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Form -->
+                {% if claim.status == 'PENDING' or claim.status == 'UNDER_REVIEW' %}
+                    <form method="POST" class="mt-8 space-y-6">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Admin Notes (Optional)</label>
+                            <textarea name="verification_notes" rows="3" 
+                                      placeholder="Add any notes about your decision..."
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button type="submit" name="action" value="approve"
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Approve Claim
+                            </button>
+                            
+                            <button type="submit" name="action" value="review"
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Under Review
+                            </button>
+                            
+                            <button type="submit" name="action" value="reject"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Reject Claim
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="mt-8 p-4 bg-gray-50 rounded-lg border text-center">
+                        <p class="text-gray-600">This claim has already been {{ claim.status|lower }}.</p>
+                        {% if claim.verified_by %}
+                            <p class="text-sm text-gray-500 mt-1">
+                                Verified by {{ claim.verified_by.username }} on {{ claim.verification_date|date:"F d, Y g:i A" }}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Claim Analysis Helper -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Verification Guidelines</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-green-700 mb-2">✅ Signs of Legitimate Claims</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Specific details only owner would know</li>
+                        <li>• Mentions of serial numbers or unique identifiers</li>
+                        <li>• Describes specific damage or wear patterns</li>
+                        <li>• References personal content (photos, contacts)</li>
+                        <li>• Consistent with item description</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-red-700 mb-2">❌ Red Flags</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Vague or generic descriptions</li>
+                        <li>• Information easily guessed from photos</li>
+                        <li>• Contradicts original item description</li>
+                        <li>• Multiple claims from same user</li>
+                        <li>• Suspicious timing or behavior</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

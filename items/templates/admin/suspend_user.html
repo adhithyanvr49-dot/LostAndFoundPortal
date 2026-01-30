@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Suspend User Account</h1>
+                    <p class="text-gray-600">Temporarily suspend user access to the platform</p>
+                </div>
+                <a href="{% url 'manage_users' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    ← Back to Users
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <!-- User Info -->
+            <div class="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div class="flex items-center">
+                    <div class="h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <span class="text-yellow-600 font-semibold">{{ target_user.username|first|upper }}</span>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ target_user.username }}</h3>
+                        <p class="text-sm text-gray-600">{{ target_user.email }}</p>
+                        <p class="text-xs text-gray-500">Joined: {{ target_user.date_joined|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Warning</h3>
+                        <p class="text-sm text-red-700 mt-1">
+                            Suspending this user will immediately prevent them from logging into their account. 
+                            They will see a suspension message when attempting to log in.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suspension Form -->
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Suspension Reason</label>
+                    <textarea name="reason" rows="4" required
+                              placeholder="Please provide a clear reason for the suspension (e.g., violation of terms of service, inappropriate behavior, spam, etc.)"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">This reason will be shown to the user when they try to log in.</p>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button type="button" onclick="history.back()" 
+                            class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                        </svg>
+                        Suspend User
+                    </button>
+                </div>
+            </form>
+
+            <!-- Additional Info -->
+            <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 class="text-sm font-semibold text-blue-800 mb-2">What happens when a user is suspended?</h4>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• User cannot log into their account</li>
+                    <li>• They will see the suspension reason when attempting to log in</li>
+                    <li>• Their existing data and reports remain intact</li>
+                    <li>• You can reactivate their account at any time</li>
+                    <li>• Suspension is logged with your admin account and timestamp</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

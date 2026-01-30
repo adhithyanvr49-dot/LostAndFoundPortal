@@ -1,13 +1,10 @@
-from django.shortcuts import render, redirect
-from .forms import ItemReportForm 
-# items/views.py
-from django.shortcuts import render, get_object_or_404
-from .models import Item
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db import models  # This fixes the NameError
+from django.contrib import messages
+from django.db import models
 from django.contrib.auth import get_user_model
-from .models import Message, Item # Ensure your custom models are imported
+from .forms import ItemReportForm 
+from .models import Message, Item, Claim
 
 def item_detail(request, pk):
     # Retrieve the item by its Primary Key (pk)
@@ -236,17 +233,55 @@ def claim_item(request, item_id):
     if request.method == 'POST':
         item = get_object_or_404(Item, id=item_id)
         proof = request.POST.get('proof_description')
+        claim_type = request.POST.get('claim_type', 'ownership')
+        
+        # Check if user is claiming their own item
+        if claim_type == 'found_my_item' and item.user != request.user:
+            messages.error(request, 'You can only claim your own reported items.')
+            return redirect('item_detail', pk=item_id)
+        
+        # Check if user already has a pending claim for this item
+        existing_claim = Claim.objects.filter(
+            item=item, 
+            claimant=request.user, 
+            status__in=['PENDING', 'UNDER_REVIEW']
+        ).first()
+        
+        if existing_claim:
+            messages.warning(request, 'You already have a pending claim for this item.')
+            return redirect('claim_history')
         
         # Save the claim to the database
         Claim.objects.create(
             item=item,
             claimant=request.user,
+            claim_type=claim_type,
             proof_description=proof,
-            status='PENDING' # Status shown in Claim History
+            status='PENDING'
         )
-        return redirect('claim_history') # Redirect to see the new entry
+        
+        if claim_type == 'found_my_item':
+            messages.success(request, 'Your "Found My Item" claim has been submitted for verification.')
+        else:
+            messages.success(request, 'Your ownership claim has been submitted for verification.')
+            
+        return redirect('claim_history')
     
     return redirect('dashboard')
+
+@login_required
+def submit_claim_form(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    
+    # Determine claim type based on ownership
+    is_own_item = item.user == request.user
+    
+    context = {
+        'item': item,
+        'is_own_item': is_own_item,
+    }
+    
+    return render(request, 'items/submit_claim.html', context)
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Claim 

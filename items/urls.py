@@ -18,5 +18,6 @@ urlpatterns = [
     # items/urls.py
     path('claim/delete/<int:claim_id>/', views.delete_claim, name='delete_claim'),
     path('claim/<int:item_id>/', views.claim_item, name='claim_item'),
+    path('submit-claim/<int:item_id>/', views.submit_claim_form, name='submit_claim_form'),
 ]
 
