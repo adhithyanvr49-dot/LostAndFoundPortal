@@ -19,8 +19,13 @@
                     <p class="text-xs text-slate-400 truncate">Click to view conversation</p>
                 </a>
                 {% empty %}
-                <div class="p-10 text-center text-slate-600 italic text-sm">
-                    No conversations found.
+                <div class="p-10 text-center text-slate-600">
+                    <i class="fa-solid fa-comments text-4xl mb-4 opacity-20"></i>
+                    <p class="text-sm font-medium mb-2">No conversations yet</p>
+                    <p class="text-xs opacity-60 mb-4">Start a conversation by contacting item owners from approved claims</p>
+                    <a href="{% url 'claim_history' %}" class="text-blue-400 hover:text-blue-300 text-xs underline">
+                        View Your Claims
+                    </a>
                 </div>
                 {% endfor %}
             </div>
@@ -76,7 +81,7 @@
             <div class="p-4 bg-[#0f172a]/50 border-t border-slate-700">
                 <form method="POST" action="{% url 'messages_view' receiver.id %}" class="flex gap-4">
                     {% csrf_token %}
-                    <input type="text" name="content" placeholder="Type your message to the founder..." required
+                    <input type="text" name="content" placeholder="Type your message..." required
                            class="flex-1 bg-[#0f172a] border border-slate-600 rounded-xl px-4 py-3 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl font-bold text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/20">
                         Send
@@ -88,8 +93,14 @@
             <!-- State when no contact is selected -->
             <div class="flex-1 flex flex-col items-center justify-center text-slate-500 p-10">
                 <i class="fa-solid fa-comments text-5xl mb-4 opacity-20"></i>
-                <p class="text-lg font-medium">Select a founder to start chatting</p>
-                <p class="text-sm opacity-60">Your conversations will appear here.</p>
+                <p class="text-lg font-medium mb-2">Select a contact to start chatting</p>
+                <p class="text-sm opacity-60 mb-4">Your conversations will appear here.</p>
+                <div class="text-center">
+                    <p class="text-xs text-slate-600 mb-2">💡 How to start conversations:</p>
+                    <p class="text-xs text-slate-500">1. Submit claims for items</p>
+                    <p class="text-xs text-slate-500">2. Wait for admin approval</p>
+                    <p class="text-xs text-slate-500">3. Contact item owners from claim history</p>
+                </div>
             </div>
             {% endif %}
         </div>

@@ -47,10 +47,6 @@ def claim_history(request):
     # This renders the claim history page for the logged-in user
     return render(request, 'items/claim_history.html')
 @login_required
-def messages_view(request):
-    # This renders the new messaging interface
-    return render(request, 'items/messages.html')
-@login_required
 def report_item(request):
     if request.method == 'POST':
         form = ItemReportForm(request.POST, request.FILES)
@@ -71,15 +67,44 @@ from .models import Item
 def auto_matches(request):
     # Find user's LOST items
     user_lost = Item.objects.filter(user=request.user, status='LOST')
-    categories = user_lost.values_list('category', flat=True)
+    lost_categories = user_lost.values_list('category', flat=True).distinct()
     
     # Find items found by OTHERS in the same categories
-    matches = Item.objects.filter(
+    potential_matches = Item.objects.filter(
         status='FOUND', 
-        category__in=categories
-    ).exclude(user=request.user)
+        category__in=lost_categories
+    ).exclude(user=request.user).order_by('-created_at')
     
-    return render(request, 'items/auto_matches.html', {'matches': matches})
+    # Also find items where others lost similar items to what user found
+    user_found = Item.objects.filter(user=request.user, status='FOUND')
+    found_categories = user_found.values_list('category', flat=True).distinct()
+    
+    # Find lost items by others in categories user has found items
+    reverse_matches = Item.objects.filter(
+        status='LOST',
+        category__in=found_categories
+    ).exclude(user=request.user).order_by('-created_at')
+    
+    # Get statistics
+    total_lost = user_lost.count()
+    total_found = user_found.count()
+    matches_count = potential_matches.count()
+    reverse_matches_count = reverse_matches.count()
+    
+    context = {
+        'user_lost_items': user_lost,
+        'user_found_items': user_found,
+        'potential_matches': potential_matches,
+        'reverse_matches': reverse_matches,
+        'total_lost': total_lost,
+        'total_found': total_found,
+        'matches_count': matches_count,
+        'reverse_matches_count': reverse_matches_count,
+        'lost_categories': list(lost_categories),
+        'found_categories': list(found_categories),
+    }
+    
+    return render(request, 'items/auto_matches.html', context)
 
 @login_required
 def map_view(request):
@@ -129,13 +154,33 @@ from .models import Item, Claim # Ensure Claim is imported now
 
 @login_required
 def profile_settings(request):
-    # This view satisfies the 'profile_settings' link in sidebar
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        
+        # Update user information
+        if username and username != request.user.username:
+            # Check if username is already taken
+            User = get_user_model()
+            if User.objects.filter(username=username).exclude(id=request.user.id).exists():
+                messages.error(request, 'Username is already taken.')
+            else:
+                request.user.username = username
+                request.user.save()
+                messages.success(request, 'Username updated successfully!')
+        
+        if email and email != request.user.email:
+            request.user.email = email
+            request.user.save()
+            messages.success(request, 'Email updated successfully!')
+        
+        return redirect('profile_settings')
+    
     return render(request, 'items/profile_settings.html')
 
 @login_required
-def auto_matches(request):
-    # This handles the 'Smart Features' variety
-    return render(request, 'items/auto_matches.html')
+def help_safety(request):
+    return render(request, 'items/help_safety.html')
 
 @login_required
 def claim_history(request):
@@ -208,6 +253,7 @@ def messages_view(request, receiver_id=None):
         if content:
             # Save the message to the database
             Message.objects.create(sender=request.user, receiver=receiver, content=content)
+            messages.success(request, 'Message sent successfully!')
             # Redirect back to the same chat to see the new message
             return redirect('messages_view', receiver_id=receiver.id)
 
@@ -219,10 +265,75 @@ def messages_view(request, receiver_id=None):
             Q(sender=receiver, receiver=request.user)
         ).order_by('timestamp')
 
-    return render(request, 'items/messages.html', {
+    # Get a list of unique people the user has chatted with for the sidebar
+    sent_messages = Message.objects.filter(sender=request.user).values_list('receiver', flat=True)
+    received_messages = Message.objects.filter(receiver=request.user).values_list('sender', flat=True)
+    
+    # Combine and get unique user IDs
+    contact_ids = set(list(sent_messages) + list(received_messages))
+    contact_ids.discard(request.user.id)  # Remove self from contacts
+    contacts = User.objects.filter(id__in=contact_ids)
+
+    context = {
         'receiver': receiver,
-        'chat_messages': chat_messages
+        'chat_messages': chat_messages,
+        'contacts': contacts
+    }
+    
+    return render(request, 'items/messages.html', context)
+
+@login_required
+def messages_debug(request, receiver_id=None):
+    """Debug version of messages view"""
+    User = get_user_model()
+    receiver = None
+    
+    if receiver_id:
+        receiver = get_object_or_404(User, id=receiver_id)
+
+    # Fetch messages between the logged-in user and the selected receiver
+    chat_messages = []
+    if receiver:
+        chat_messages = Message.objects.filter(
+            Q(sender=request.user, receiver=receiver) | 
+            Q(sender=receiver, receiver=request.user)
+        ).order_by('timestamp')
+
+    # Get contacts
+    sent_messages = Message.objects.filter(sender=request.user).values_list('receiver', flat=True)
+    received_messages = Message.objects.filter(receiver=request.user).values_list('sender', flat=True)
+    contact_ids = set(list(sent_messages) + list(received_messages))
+    contact_ids.discard(request.user.id)
+    contacts = User.objects.filter(id__in=contact_ids)
+
+    return render(request, 'items/messages_debug.html', {
+        'receiver': receiver,
+        'chat_messages': chat_messages,
+        'contacts': contacts
     })
+
+@login_required
+def start_conversation(request, user_id):
+    """Start a conversation with another user"""
+    User = get_user_model()
+    other_user = get_object_or_404(User, id=user_id)
+    
+    # Check if there's already a conversation
+    existing_messages = Message.objects.filter(
+        Q(sender=request.user, receiver=other_user) | 
+        Q(sender=other_user, receiver=request.user)
+    ).exists()
+    
+    if not existing_messages:
+        # Create an initial message to start the conversation
+        Message.objects.create(
+            sender=request.user,
+            receiver=other_user,
+            content=f"Hi {other_user.username}, I'm interested in discussing an item with you."
+        )
+        messages.success(request, f'Conversation started with {other_user.username}')
+    
+    return redirect('messages_view', receiver_id=other_user.id)
 # items/views.py# items/views.py
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required

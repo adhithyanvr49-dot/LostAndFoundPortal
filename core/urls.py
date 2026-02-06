@@ -21,13 +21,14 @@ from django.conf.urls.static import static
 from .views import landing_page # Import your view
 from accounts.views import (
     signup_view, custom_login_view, admin_dashboard, verify_claim,
-    manage_users, suspend_user, reactivate_user
+    manage_users, suspend_user, reactivate_user, custom_logout_view
 )
 
 urlpatterns = [
     
     path('accounts/signup/', signup_view, name='signup'),
     path('accounts/login/', custom_login_view, name='login'),
+    path('accounts/logout/', custom_logout_view, name='logout'),
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path('verify-claim/<int:claim_id>/', verify_claim, name='verify_claim'),
     path('manage-users/', manage_users, name='manage_users'),

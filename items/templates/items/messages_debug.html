@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Messages Debug</h1>
+        
+        <!-- Debug Info -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold mb-4">Debug Information</h2>
+            <p><strong>Current User:</strong> {{ user.username }}</p>
+            <p><strong>Receiver:</strong> {% if receiver %}{{ receiver.username }}{% else %}None{% endif %}</p>
+            <p><strong>Number of Contacts:</strong> {{ contacts|length }}</p>
+            <p><strong>Number of Messages:</strong> {{ chat_messages|length }}</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Contacts List -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Contacts ({{ contacts|length }})</h2>
+                {% for contact in contacts %}
+                    <div class="p-2 border-b">
+                        <a href="{% url 'messages_view' contact.id %}" class="text-blue-600 hover:underline">
+                            {{ contact.username }}
+                        </a>
+                    </div>
+                {% empty %}
+                    <p class="text-gray-500">No contacts found</p>
+                {% endfor %}
+            </div>
+            
+            <!-- Messages -->
+            <div class="md:col-span-2 bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">
+                    Messages {% if receiver %}with {{ receiver.username }}{% endif %}
+                </h2>
+                
+                {% if receiver %}
+                    <div class="space-y-2 mb-4 max-h-96 overflow-y-auto">
+                        {% for message in chat_messages %}
+                            <div class="p-2 {% if message.sender == user %}bg-blue-100 text-right{% else %}bg-gray-100{% endif %} rounded">
+                                <strong>{{ message.sender.username }}:</strong> {{ message.content }}
+                                <br><small class="text-gray-500">{{ message.timestamp }}</small>
+                            </div>
+                        {% empty %}
+                            <p class="text-gray-500">No messages yet</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Send Message Form -->
+                    <form method="POST" class="flex gap-2">
+                        {% csrf_token %}
+                        <input type="text" name="content" placeholder="Type your message..." 
+                               class="flex-1 p-2 border rounded" required>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Send
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-gray-500">Select a contact to start messaging</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Raw Data for Debugging -->
+        <div class="mt-6 bg-gray-100 p-4 rounded-lg">
+            <h3 class="font-semibold mb-2">Raw Data:</h3>
+            <pre class="text-sm">
+Contacts: {% for contact in contacts %}{{ contact.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
+Messages: {{ chat_messages|length }}
+Receiver ID: {% if receiver %}{{ receiver.id }}{% else %}None{% endif %}
+            </pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

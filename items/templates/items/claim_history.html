@@ -44,12 +44,12 @@
                     </td>
                     <td class="px-6 py-5 flex items-center gap-6">
                         {% if claim.status == 'APPROVED' %}
-                            <a href="{% url 'messages_view' receiver_id=claim.item.user.id %}" class="btn-primary">
+                            <a href="{% url 'start_conversation' claim.item.user.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                 Contact Finder
                             </a>
                         {% else %}
                             <span class="text-slate-600 text-sm">
-                                {% if claim.status == 'PENDING' %}Awaiting verification{% else %}Claim rejected{% endif %}
+                                {% if claim.status == 'PENDING' %}Awaiting verification{% elif claim.status == 'UNDER_REVIEW' %}Under review{% else %}Claim rejected{% endif %}
                             </span>
                         {% endif %}
                         <form action="{% url 'delete_claim' claim.id %}" method="POST" onsubmit="return confirm('Are you sure you want to remove this claim from your history?');">

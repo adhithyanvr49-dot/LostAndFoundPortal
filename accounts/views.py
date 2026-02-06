@@ -1,6 +1,6 @@
 # accounts/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
@@ -198,3 +198,9 @@ def reactivate_user(request, user_id):
         return redirect('manage_users')
     
     return render(request, 'admin/reactivate_user.html', {'target_user': user})
+
+def custom_logout_view(request):
+    """Custom logout view that handles both admin and normal user logout"""
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('login')

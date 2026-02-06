@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex min-h-screen bg-slate-50">
+    <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col">
+        <div class="p-6 flex-grow">
+            <nav class="space-y-6">
+                {% if user.is_admin_user %}
+                <div>
+                    <p class="text-[10px] font-bold text-red-400 uppercase px-2 mb-2 tracking-widest">Admin Panel</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'admin_dashboard' %}" class="flex items-center p-3 text-red-600 bg-red-50 rounded-lg font-semibold border border-red-200">
+                            <i class="fa-solid fa-shield-halved mr-3"></i> Admin Dashboard
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-2 mb-2 tracking-widest">Primary Actions</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'dashboard' %}" class="flex items-center p-3 text-indigo-600 bg-indigo-50 rounded-lg font-semibold">
+                            <i class="fa-solid fa-chart-line mr-3"></i> Dashboard
+                        </a>
+                        <a href="{% url 'item_list' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                            <i class="fa-solid fa-rss mr-3"></i> Global Feed
+                        </a>
+                        <a href="{% url 'report_item' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                            <i class="fa-solid fa-circle-plus mr-3"></i> Report New Item
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-2 mb-2 tracking-widest">User Management</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'my_reports' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition">
+                            <i class="fa-solid fa-briefcase mr-3"></i> My Reports
+                        </a>
+                        <a href="{% url 'claim_history' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition">
+            <i class="fa-solid fa-clock-rotate-left mr-3"></i> Claim History
+        </a>
+                        <a href="{% url 'my_messages' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition justify-between">
+    <span class="flex items-center"><i class="fa-solid fa-message mr-3"></i> My Messages</span>
+    <span class="bg-indigo-600 text-white text-[10px] px-1.5 rounded-full">New</span>
+</a>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-2 mb-2 tracking-widest">Smart Features</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'auto_matches' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition">
+    <i class="fa-solid fa-wand-magic-sparkles mr-3 text-amber-500"></i> Auto-Matches
+</a>
+<a href="{% url 'map_view' %}" class="flex items-center p-3 text-slate-600 hover:bg-slate-50 rounded-lg transition">
+    <i class="fa-solid fa-map-location-dot mr-3"></i> Map View
+</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="p-6 border-t border-slate-100 space-y-1">
+            <a href="{% url 'profile_settings' %}" class="flex items-center p-2 text-slate-500 hover:text-indigo-600 text-sm transition">
+                <i class="fa-solid fa-user-gear mr-3"></i> Profile Settings
+            </a>
+            <a href="{% url 'help_safety' %}" class="flex items-center p-2 text-slate-500 hover:text-indigo-600 text-sm transition">
+                <i class="fa-solid fa-shield-halved mr-3"></i> Help & Safety
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <div class="max-w-5xl mx-auto">
+            <header class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Welcome back, {{ user.username }}!</h1>
+                        <p class="text-slate-500">Manage your lost and found items efficiently.</p>
+                    </div>
+                    {% if user.is_admin_user %}
+                        <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+                            <span class="text-red-600 font-semibold text-sm">🛡️ Administrator</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            {% if potential_matches %}
+            <div class="mb-8 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg shadow-sm flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-lightbulb text-amber-600 mr-3 text-xl"></i>
+                    <div>
+                        <p class="text-sm text-amber-800 font-bold">Smart Match Found!</p>
+                        <p class="text-xs text-amber-700">We found items in the Global Feed that match your reports.</p>
+                    </div>
+                </div>
+                <a href="{% url 'item_list' %}" class="text-xs font-bold text-amber-800 underline">View Matches</a>
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-sm font-medium text-slate-500 uppercase">Lost Reports</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ lost_count }}</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-sm font-medium text-slate-500 uppercase">Found Reports</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ found_count }}</p>
+                </div>
+                <div class="bg-indigo-600 p-6 rounded-xl shadow-md border border-indigo-700">
+                    <p class="text-sm font-medium text-indigo-100 uppercase">Resolved Matches</p>
+                    <p class="text-3xl font-bold text-white mt-2">0</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-slate-900">Your Recent Activity</h2>
+                    <a href="{% url 'report_item' %}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">+ New Report</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                            <tr>
+                                <th class="px-6 py-4">Item Name</th>
+                                <th class="px-6 py-4">Category</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Date</th>
+                                <th class="px-6 py-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+                            {% for item in my_items %}
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-6 py-4 font-medium text-slate-900">{{ item.title }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
+                                        {{ item.get_category_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold 
+                                        {% if item.status == 'LOST' %} bg-red-100 text-red-600 {% else %} bg-emerald-100 text-emerald-600 {% endif %}">
+                                        {{ item.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-slate-500">{{ item.created_at|date:"M d, Y" }}</td>
+                                <td class="px-6 py-4">
+                                    <a href="{% url 'item_detail' item.pk %}" class="text-indigo-600 hover:text-indigo-800 font-semibold transition">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-slate-400 italic">You haven't reported any items yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

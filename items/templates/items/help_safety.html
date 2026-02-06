@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen bg-[#0f172a] p-8 text-white">
+    <!-- Header -->
+    <div class="mb-10">
+        <h1 class="text-4xl font-bold text-amber-500 flex items-center gap-3 mb-4">
+            <i class="fa-solid fa-shield-halved"></i> Help & Safety
+        </h1>
+        <p class="text-slate-400 text-lg">Your safety is our priority. Learn how to use our platform securely.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- Safety Guidelines -->
+        <div class="bg-[#1e293b] p-8 rounded-3xl border border-amber-500/30">
+            <h2 class="text-2xl font-bold text-amber-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Safety Guidelines
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-users text-green-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">Meet in Public Places</h3>
+                            <p class="text-slate-400 text-sm">Always arrange to meet in well-lit, public locations with other people around.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-user-friends text-blue-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">Bring a Friend</h3>
+                            <p class="text-slate-400 text-sm">Consider bringing a trusted friend when meeting someone to exchange items.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-clock text-purple-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">Daytime Meetings</h3>
+                            <p class="text-slate-400 text-sm">Schedule meetings during daylight hours when possible.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-phone text-red-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">Trust Your Instincts</h3>
+                            <p class="text-slate-400 text-sm">If something feels wrong, don't proceed with the meeting. Your safety comes first.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-shield-alt text-indigo-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">Verify Identity</h3>
+                            <p class="text-slate-400 text-sm">Ask for additional proof of ownership before handing over valuable items.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-ban text-orange-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-white mb-1">No Personal Info</h3>
+                            <p class="text-slate-400 text-sm">Don't share personal information like home address or financial details.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to Report Issues -->
+        <div class="bg-[#1e293b] p-8 rounded-3xl border border-red-500/30">
+            <h2 class="text-2xl font-bold text-red-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-flag"></i>
+                Report Issues
+            </h2>
+            <div class="space-y-4">
+                <p class="text-slate-300">If you encounter any suspicious behavior, scams, or safety concerns:</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                        <h3 class="font-semibold text-red-400 mb-2">Contact Admin</h3>
+                        <p class="text-slate-400 text-sm">Use our messaging system to report issues to administrators immediately.</p>
+                    </div>
+                    <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                        <h3 class="font-semibold text-red-400 mb-2">Document Evidence</h3>
+                        <p class="text-slate-400 text-sm">Take screenshots of suspicious messages or behavior as evidence.</p>
+                    </div>
+                    <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                        <h3 class="font-semibold text-red-400 mb-2">Emergency Contacts</h3>
+                        <p class="text-slate-400 text-sm">For immediate safety concerns, contact local authorities directly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Features -->
+        <div class="bg-[#1e293b] p-8 rounded-3xl border border-blue-500/30">
+            <h2 class="text-2xl font-bold text-blue-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-cogs"></i>
+                Platform Features
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-white mb-3">Verification System</h3>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-green-500"></i>
+                            Admin verification for all claims
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-green-500"></i>
+                            Proof of ownership required
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-green-500"></i>
+                            User account verification
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white mb-3">Communication Tools</h3>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-green-500"></i>
+                            Secure messaging system
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-green-500"></i>
+                            No personal info sharing required
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fa-solid fa-check text-green-500"></i>
+                            Message history tracking
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-[#1e293b] p-8 rounded-3xl border border-green-500/30">
+            <h2 class="text-2xl font-bold text-green-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-question-circle"></i>
+                Frequently Asked Questions
+            </h2>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-semibold text-white mb-2">How do I verify someone's identity?</h3>
+                    <p class="text-slate-400 text-sm">Ask for additional photos of the item, receipts, or other proof of ownership. Our admin team also verifies all claims before approval.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white mb-2">What if someone asks for money?</h3>
+                    <p class="text-slate-400 text-sm">Legitimate lost and found exchanges should not involve money. Report any requests for payment to our admin team immediately.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white mb-2">Can I cancel a claim?</h3>
+                    <p class="text-slate-400 text-sm">Yes, you can cancel your claims from the Claim History page. However, once an admin approves a claim, the process cannot be reversed.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white mb-2">How long do items stay listed?</h3>
+                    <p class="text-slate-400 text-sm">Items remain active until they are successfully claimed and verified, or until the owner marks them as resolved.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="bg-gradient-to-r from-amber-500/10 to-blue-500/10 p-8 rounded-3xl border border-amber-500/20">
+            <h2 class="text-2xl font-bold text-amber-400 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-headset"></i>
+                Need More Help?
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-white mb-3">Contact Support</h3>
+                    <div class="space-y-2 text-slate-300 text-sm">
+                        <p class="flex items-center gap-2">
+                            <i class="fa-solid fa-envelope text-blue-500"></i>
+                            Message our admin team through the platform
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-green-500"></i>
+                            Response time: Within 24 hours
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-white mb-3">Emergency</h3>
+                    <div class="space-y-2 text-slate-300 text-sm">
+                        <p class="flex items-center gap-2">
+                            <i class="fa-solid fa-phone text-red-500"></i>
+                            For immediate safety concerns, contact local authorities
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i class="fa-solid fa-shield-alt text-purple-500"></i>
+                            Your safety is our top priority
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Dashboard -->
+        <div class="text-center pt-8">
+            <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-xl font-semibold transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
